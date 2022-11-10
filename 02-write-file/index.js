@@ -12,7 +12,7 @@ fs.writeFile(file, "", (err) => {
 
 // Events
 process.on("exit", () => stdout.write("Удачи!"));
-process.on("SIGINT", () => process.exit());
+process.on("SIGINT", process.exit);
 
 // User input
 stdin.on("data", data => {
@@ -20,7 +20,5 @@ stdin.on("data", data => {
    if (key === "exit")
       process.exit()
    else
-      fs.appendFile(file, data, (err) => {
-         if (err) throw err;
-      })
+      fs.appendFile(file, data, (err) => { if (err) throw err; })
 })
