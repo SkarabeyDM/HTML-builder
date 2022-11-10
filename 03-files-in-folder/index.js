@@ -4,7 +4,7 @@ const path = require("path");
 const dir = path.join(__dirname, "secret-folder");
 
 const pathToFile = (fileName) => path.join(dir, fileName);
-// Разделяет имя файла и разрешение
+// Разделяет имя файла и расширение
 const fileExt = (fileName) => fileName.match(/^(.+)\.([0-9a-z]+)$/).slice(1)
 // Записывает данные о файле в строку
 const fileStats = async (fileName) => [...fileExt(fileName), (await promises.stat(pathToFile(fileName))).size / 1000 + "kb"].join(" - ");
