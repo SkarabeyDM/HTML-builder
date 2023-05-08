@@ -10,10 +10,12 @@ mergeFiles(stylesDir, targetFile);
 async function mergeFiles(fromDir, toFile) {
    const writeStream = createWriteStream(toFile)
 
-   const isCss = (str) => str.split(".").pop() === "css"
-   const stylePath = (str) => path.join(fromDir, str)
-   const merge = async (fileName) => createReadStream(stylePath(fileName)).pipe(writeStream)
+   const isCss = (str) => /.css$/.test(str)
+   const merge = async (fileName) => {
+      if (isCss(fileName))
+         createReadStream(path.join(fromDir, fileName)).pipe(writeStream)
+   }
 
-   await Promise.all((await readdir(fromDir)).filter(isCss).map(merge))
+   await (await readdir(fromDir)).forEach(await merge)
 }
 

@@ -3,8 +3,6 @@ const fs = require("fs")
 const path = require("path")
 const { Transform } = require("stream");
 
-//const copyDir = require("../04-copy-directory/index.js");
-
 const targetDir = path.join(__dirname, "/project-dist")
 
 const buildPath = (subPath) => path.join(targetDir, subPath)
@@ -23,7 +21,7 @@ const srcHTMLComponents = sourcePath("./components")
 
 console.log(srcHTML)
 
-   // Главная функция. Точку с запятой не удалять
+   // Главная функция. !!! Точку с запятой не удалять !!!
    ; (async () => {
       await fsPromises.mkdir(targetDir, { recursive: true });
       buildHTML(srcHTML, srcHTMLComponents, markup)
@@ -37,9 +35,7 @@ async function copyDir(srcDir, dupDir) {
 
    const files = await fsPromises.readdir(srcDir, { withFileTypes: true });
 
-   for (let i = 0; i < files.length; i++) {
-      const file = files[i];
-
+   for (const file of files) {
       const src = path.resolve(srcDir, file.name)
       const dup = path.resolve(dupDir, file.name)
 
@@ -53,11 +49,12 @@ async function copyDir(srcDir, dupDir) {
 async function mergeFiles(fromDir, toFile) {
    const writeStream = fs.createWriteStream(toFile)
 
-   const isCss = (str) => str.split(".").pop() === "css"
-   const stylePath = (str) => path.join(fromDir, str)
-   const merge = async (fileName) => fs.createReadStream(stylePath(fileName)).pipe(writeStream)
-
-   await Promise.all((await fsPromises.readdir(fromDir)).filter(isCss).map(merge))
+   const isCss = (str) => /.css$/.test(str)
+   const merge = async (fileName) => {
+      if (isCss(fileName))
+         fs.createReadStream(path.join(fromDir, fileName)).pipe(writeStream)
+   }
+   await (await fsPromises.readdir(fromDir)).forEach(await merge)
 }
 
 async function buildHTML(srcFile, componentsDir, buildFile) {
